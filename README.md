@@ -11,4 +11,6 @@ Preprocessing for this task involves isolating the relevant features from the sa
 | rb | 3 |
 | misc | 4 |
 | country | 5 |
+| ------------- | ------------- |
+
 The tasks of training and evaluation were expedited by the NLPScholar toolkit. The model can be reproduced by running main.py with train_config.yaml as an additional argument, and our evaluation results can be replicated by running main.py with eval_config.yaml. Performance metrics for the resulting predictions in preds.tsv can be subsequently attained using sklearn.
