@@ -1,0 +1,22 @@
+exp: TextClassification
+
+mode: 
+   - train
+
+models: 
+    hf_text_classification_model:
+        - distilbert-base-uncased
+
+trainfpath: song_lyrics/song_data_train.tsv
+
+validfpath: song_lyrics/song_data_val.tsv
+
+modelfpath: trained_song_model
+
+loadPretrained: False
+
+numLabels: 6
+
+checkFileColumns: False
+
+epochs: 1

@@ -1,0 +1,26 @@
+exp: TextClassification
+
+mode: 
+   - evaluate
+
+models: 
+    hf_text_classification_model:
+        - song_lyrics/trained_song_model
+
+datafpath: song_lyrics/song_data_test_small.tsv
+
+predfpath: song_lyrics/preds.tsv
+
+loadPretrained: False
+
+numLabels: 6
+
+checkFileColumns: False
+
+id2label:
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 4
+    5: 5
