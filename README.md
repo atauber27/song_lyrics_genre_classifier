@@ -13,3 +13,9 @@ Preprocessing for this task involves isolating the relevant features from the sa
 | country | 5 |
 
 The tasks of training and evaluation were expedited by the NLPScholar toolkit. The model can be reproduced by running main.py with train_config.yaml as an additional argument, and our evaluation results can be replicated by running main.py with eval_config.yaml. Performance metrics for the resulting predictions in preds.tsv can be subsequently attained using sklearn.
+# Status Update
+## Dataset splitting
+Using random ordering of the dataset we create a 80:10:10 split of our data for training, validation and evaluation respectively. From there we progressively split our dataset in half for the purposes of having various size datasets in order to ensure training and evaluation could happen in reasonable amounts of time. Preprocessing was done in order to remove unnecssary col (title) and change col headers to work for NLPScholar
+## Training
+We trained a series of models, with varrying dataset sizes (full,half,quarter,eighth) in order to gurantee results within the timeframe we needed. BERT-cased was selected as the model we would be using from the recommendation of Professor Forest. The full model was trained within 24 hours and the rest of the models will be unused. The updated train config file is included in the github now. 
+## Evaluation 
