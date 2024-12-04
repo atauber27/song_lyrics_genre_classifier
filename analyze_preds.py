@@ -61,7 +61,7 @@ def get_error_categories():
 
 # THIS SHOULD ONLY BE CALLED BY pie_charts()!!!!
 def plot_pie_charts(batch_df, batch_num):
-    genres = ["rb", "pop", "misc", "rock", "country"]
+    genres = ["pop", "rap", "rock", "rb", "misc", "country"]
     fig, axes = plt.subplots(2, 3)
     axes = axes.flatten()
 
@@ -70,8 +70,9 @@ def plot_pie_charts(batch_df, batch_num):
         ax = axes[idx]
         ax.pie(
             values,
-            labels=genres,
-            autopct='%1.1f%%',
+            # labels=genres
+            labels=None,
+            # autopct='%1.1f%%',
             startangle=140
         )
         ax.set_title(row['target'])
@@ -80,6 +81,11 @@ def plot_pie_charts(batch_df, batch_num):
     for ax in axes[len(batch_df):]:
         ax.axis('off')
 
+    fig.legend(
+        genres,
+        title="Genres",
+        loc="upper right",  
+    )
     plt.tight_layout()
     plt.show()
 
