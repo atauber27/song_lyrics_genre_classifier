@@ -19,6 +19,21 @@ def map_labels(dataset):
     dataset['label'] = dataset['label'].map(label_mapping)
     return dataset
 
+def load_dataset_unified(file_path):
+    """Load the dataset, handling both formats."""
+    dataset = load_dataset(file_path)
+
+    if 'label' in dataset.columns and dataset['label'].dtype in [int, float]:
+        # Original format with numeric labels
+        dataset = map_labels(dataset)
+    elif 'target' in dataset.columns:
+        # Alternate format with genre names in the 'target' column
+        dataset.rename(columns={'target': 'label'}, inplace=True)
+    else:
+        raise ValueError("Dataset format not recognized. Ensure it contains either a 'label' column with numeric values or a 'target' column with genre names.")
+
+    return dataset
+
 def prepare_samples(dataset, exclude_genre, num_samples_per_genre):
     """Prepare random samples from the dataset, excluding a specific genre."""
     filtered_data = dataset[dataset['label'] != exclude_genre]
@@ -73,13 +88,13 @@ def save_results(results, output_file):
     results_df.to_csv(output_file, sep='\t', index=False)
 
 if __name__ == "__main__":
-    dataset_path = "data/song_data_test.tsv"
-    output_file = "quiz_results.tsv"
+    #dataset_path = "data/song_data_test.tsv"
+    dataset_path = "songs_plus_ai.tsv"
+    output_file = "quiz_resultsEli.tsv"
     exclude_genre = "misc"
     num_samples_per_genre = 10  # 50 samples equally divided among 5 genres
 
-    dataset = load_dataset(dataset_path)
-    dataset = map_labels(dataset)
+    dataset = load_dataset_unified(dataset_path)
     samples = prepare_samples(dataset, exclude_genre, num_samples_per_genre)
 
     print("Starting the genre prediction quiz. You'll see song text and guess their genre.")
