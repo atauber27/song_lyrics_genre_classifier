@@ -2,13 +2,12 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def create_analysis_file():
-    fname = "preds_full.tsv"
+def create_analysis_file(input_fname, output_fname):
     labels = ['pop', 'rap', 'rock', 'rb', 'misc', 'country']
     analysis = {}
     for label in labels:
         analysis[label] = {'tp' : 0, 'tn' : 0, 'fp' : 0, 'fn' : 0}
-    preds = pd.read_csv(fname, sep='\t')
+    preds = pd.read_csv(input_fname, sep='\t')
     for index, row in preds.iterrows():
         if row['target'] == row['predicted']:
             for k, v in analysis.items():
@@ -25,16 +24,24 @@ def create_analysis_file():
                 else:
                     v['tn'] = v['tn'] + 1
     df = pd.DataFrame(columns=['Genre', 'Accuracy', 'Precision', 'Recall', 'F1'])
+    avg_acc = 0
+    avg_prec = 0
+    avg_rec = 0
+    avg_f1 = 0
     for k, v in analysis.items():
-        acc = (v['tp'] + v['tn']) / (v['tp'] + v['tn'] + v['fp'] + v['fn'])
-        prec = v['tp'] / (v['tp'] + v['fp'])
-        rec = v['tp'] / (v['tp'] + v['fn'])
-        f1 = (2 * prec * rec) / (prec + rec)
+        acc = (v['tp'] + v['tn']) / (v['tp'] + v['tn'] + v['fp'] + v['fn']) if v['tp'] + v['tn'] + v['fp'] + v['fn'] != 0 else 0
+        prec = v['tp'] / (v['tp'] + v['fp']) if v['tp'] + v['fp'] != 0 else 0
+        rec = v['tp'] / (v['tp'] + v['fn']) if v['tp'] + v['fn'] != 0 else 0
+        f1 = (2 * prec * rec) / (prec + rec) if prec + rec != 0 else 0
+        avg_acc += acc
+        avg_prec += prec
+        avg_rec += rec
+        avg_f1 += f1
         df.loc[len(df)] = {'Genre': k, 'Accuracy':acc, 'Precision':prec, 'Recall':rec, 'F1':f1}
-    df.to_csv('analysis.tsv', sep='\t')
+    df.loc[len(df)] = {'Genre': 'Average', 'Accuracy':avg_acc/6, 'Precision':avg_prec/6, 'Recall':avg_rec/6, 'F1':avg_f1/6}
+    df.to_csv(output_fname, sep='\t')
 
-def get_error_categories():
-    fname = "preds_distilgpt.tsv"
+def get_error_categories(fname):
     genres = ['pop', 'rap', 'rock', 'rb', 'misc', 'country']
     df = pd.DataFrame(columns=[''] + genres + ['total'])
     preds = pd.read_csv(fname, sep='\t')
@@ -49,7 +56,7 @@ def get_error_categories():
         for v in mapping[k]:
             if v == 'total':
                 continue
-            mapping[k][v] = mapping[k][v] / mapping[k]['total']
+            mapping[k][v] = mapping[k][v] / mapping[k]['total'] if mapping[k]['total'] != 0 else 0
     print(mapping)
     df = pd.DataFrame.from_dict(mapping, orient='index')
     df.drop(columns='total', inplace=True)
@@ -62,7 +69,7 @@ def get_error_categories():
 # THIS SHOULD ONLY BE CALLED BY pie_charts()!!!!
 def plot_pie_charts(batch_df, batch_num):
     genres = ["pop", "rap", "rock", "rb", "misc", "country"]
-    fig, axes = plt.subplots(2, 3)
+    fig, axes = plt.subplots(2, 3, figsize=(4, 4))
     axes = axes.flatten()
 
     for idx, (row_index, row) in enumerate(batch_df.iterrows()):
@@ -75,7 +82,7 @@ def plot_pie_charts(batch_df, batch_num):
             # autopct='%1.1f%%',
             startangle=140
         )
-        ax.set_title(row['target'])
+        ax.set_title(row['target'], fontsize=24)
     
     # Hide unused subplots if batch size < 6
     for ax in axes[len(batch_df):]:
@@ -100,7 +107,9 @@ def pie_charts():
         batch_df = df.iloc[start_idx:end_idx]
         plot_pie_charts(batch_df, batch_num + 1)
 
-
-pie_charts()
+fname_suffix = 'quiz_resultsEliAI.tsv'
+create_analysis_file(f'userGuessData/aiGuesses/{fname_suffix}', f'userGuessData/aiGuesses/analysis/{fname_suffix}')
+#get_error_categories('userGuessData/realGuesses/quiz_resultsEli.tsv')
+#pie_charts()
         
         
