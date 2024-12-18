@@ -1,6 +1,11 @@
 import pandas as pd
 import random
 import os
+"""
+This file was used for having human anotation of both our generated song dataset and our actual song dataset.
+This script exists to easily aggregrate data from these results and produce a form similar to our TextClassification Model
+"""
+
 
 def load_dataset(file_path):
     """Load the dataset from a TSV file."""
