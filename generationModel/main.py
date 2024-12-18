@@ -1573,40 +1573,30 @@ Turning my pain into something I can use
 ]
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-# Load the model and tokenizer
 model = AutoModelForCausalLM.from_pretrained("fine_tuned_gpt2").to("cuda")  # Move model to GPU
 tokenizer = AutoTokenizer.from_pretrained("fine_tuned_gpt2", padding_side="left")
 tokenizer.pad_token = tokenizer.eos_token
 
-# Open file for writing songs
 f = open("songsGpt2.txt", "a", encoding="utf-8")
 i = 0
 
-# Generate songs
 for prompt in prompts:
     output = ""
     i += 1
     while len(output) < 1000:
-        # Tokenize prompt and move inputs to GPU
         model_inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
-        
-        # Generate text using the model
         generated_ids = model.generate(
             **model_inputs, 
             max_new_tokens=1024 - len(prompt), 
             do_sample=True, 
             repetition_penalty=1.01
         )
-        
-        # Decode the output
         output = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
         print(f"Song generated length of {len(output)}")
     
     print(f"Song {i} finished\n")
     f.write("\n*****SONG STARTS HERE*****\n")
     f.write(output)
-
-# Close the file
 f.close()
 
 

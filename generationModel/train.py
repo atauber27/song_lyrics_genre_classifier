@@ -15,21 +15,12 @@ def main():
     else:
         print("Using CPU")
 
-    # Initialize Accelerator
     accelerator = Accelerator()
-
     model_name = "gpt2"
     model = AutoModelForCausalLM.from_pretrained(model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
-
-    # Prepare model and tokenizer with Accelerator
     model, tokenizer = accelerator.prepare(model, tokenizer)
-
-    # Enable gradient checkpointing
-    model.gradient_checkpointing_enable()
-
-    # Load data
     train_file_path = "processed_train_dataset.tsv"
     eval_file_path = "processed_val_dataset.tsv" 
 
@@ -58,24 +49,18 @@ def main():
         num_train_epochs=4,
         fp16=True,  # Enable mixed precision
         logging_dir="./logs",
-        per_device_train_batch_size=8,  # Reduced batch size
-        per_device_eval_batch_size=8,   
-        gradient_accumulation_steps=2,  # Simulate a larger batch size
-        dataloader_num_workers=4,       # Adjust for optimal performance
+        per_device_train_batch_size=8,  
+        gradient_accumulation_steps=2,  # Simulates a larger batch size
+        dataloader_num_workers=4,    
     )
 
-    # Create the Trainer instance
     trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=tokenized_train_dataset,
         eval_dataset=tokenized_eval_dataset,
     )
-
-    # Start training
     trainer.train()
-
-    # Save model and tokenizer
     model.save_pretrained("./fine_tuned_gpt2")
     tokenizer.save_pretrained("./fine_tuned_gpt2")
 
