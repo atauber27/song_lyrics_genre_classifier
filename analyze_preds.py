@@ -98,7 +98,7 @@ def plot_pie_charts(batch_df, batch_num):
 
 def pie_charts():
     fname = 'preds_distilgpt_all_labels.tsv'
-    df = pd.read_csv(fname, sep='\t')
+    df = pd.read_csv(fname, sep='\t', usecols=lambda col: col != df.columns[0])
     batch_size = 6
     num_batches = (len(df) + batch_size - 1) // batch_size
     for batch_num in range(num_batches):
@@ -107,9 +107,17 @@ def pie_charts():
         batch_df = df.iloc[start_idx:end_idx]
         plot_pie_charts(batch_df, batch_num + 1)
 
-fname_suffix = 'quiz_resultsEliAI.tsv'
-create_analysis_file(f'userGuessData/aiGuesses/{fname_suffix}', f'userGuessData/aiGuesses/analysis/{fname_suffix}')
-#get_error_categories('userGuessData/realGuesses/quiz_resultsEli.tsv')
+def aggregate_tsv(fname_list, fname_out):
+    combined_df = pd.DataFrame()
+    for fname in fname_list:
+        df = pd.read_csv(fname, sep='\t')
+        combined_df = pd.concat([combined_df, df], ignore_index=True)
+    combined_df.to_csv(fname_out, sep='\t', index=False)
+
+
+data = ['userGuessData/aiGuesses/quiz_resultsAlexAI.tsv', 'userGuessData/aiGuesses/quiz_resultsEliAI.tsv', 'userGuessData/aiGuesses/quiz_resultsEmilyAI.tsv']
+aggregate_tsv(data, 'userGuessData/aiGuesses/quiz_resultsAggregateAI.tsv')
+get_error_categories('userGuessData/aiGuesses/quiz_resultsAggregateAI.tsv')
 #pie_charts()
         
         
