@@ -1,6 +1,7 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os
 
 def create_analysis_file(input_fname, output_fname):
     labels = ['pop', 'rap', 'rock', 'rb', 'misc', 'country']
@@ -114,10 +115,11 @@ def aggregate_tsv(fname_list, fname_out):
         combined_df = pd.concat([combined_df, df], ignore_index=True)
     combined_df.to_csv(fname_out, sep='\t', index=False)
 
-
-data = ['userGuessData/aiGuesses/quiz_resultsAlexAI.tsv', 'userGuessData/aiGuesses/quiz_resultsEliAI.tsv', 'userGuessData/aiGuesses/quiz_resultsEmilyAI.tsv']
-aggregate_tsv(data, 'userGuessData/aiGuesses/quiz_resultsAggregateAI.tsv')
-get_error_categories('userGuessData/aiGuesses/quiz_resultsAggregateAI.tsv')
+print(os.path.abspath('preds_5.tsv'))
+create_analysis_file('results/preds_5.tsv', 'results/analysis_5.tsv')
+# data = ['userGuessData/aiGuesses/quiz_resultsAlexAI.tsv', 'userGuessData/aiGuesses/quiz_resultsEliAI.tsv', 'userGuessData/aiGuesses/quiz_resultsEmilyAI.tsv']
+# aggregate_tsv(data, 'userGuessData/aiGuesses/quiz_resultsAggregateAI.tsv')
+# get_error_categories('userGuessData/aiGuesses/quiz_resultsAggregateAI.tsv')
 #pie_charts()
         
         
